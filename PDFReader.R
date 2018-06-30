@@ -1,6 +1,6 @@
 #PDF READER - BETA VERSION
 
-pacman::p_load(dplyr, tm, pdftools, stringr, splitstackshape)
+pacman::p_load(dplyr, tm, pdftools, stringr, splitstackshape, openxlsx)
 
 readPDFs <- function(fileNames, entriesFieldsToExtract) {
   
@@ -12,7 +12,8 @@ readPDFs <- function(fileNames, entriesFieldsToExtract) {
     pdftext <- lapply(extractor, paste, collapse = '')
     pdftext <- unlist(pdftext)
     
-    pdftext <- gsub("\\r\\n[0-9]{1}|\\[ln\\][0-9]{1}|\\r\\n|\\[ln\\]", "[ln]", pdftext)
+    pdftext <- gsub("\\r\\n[0-9]{1}|\\[ln\\][0-9]{1}|\\r\\n|\\[ln\\]|\\\n[0-9]{1}|\\\n", 
+                    "[ln]", pdftext)
     docketNum <- str_extract(pdftext, "(?<=Docket Number:\\s)[a-zA-Z0-9\\-]*(?=\\[ln\\])")
     arrestDate <- str_extract(pdftext, "(?<=Arrest Date:[\\s]{6})[0-9/]*(?=\\[ln\\])")
     
@@ -23,7 +24,7 @@ readPDFs <- function(fileNames, entriesFieldsToExtract) {
     for (j in seq_along(entriesFieldsToExtract)) {
       regexString <- paste0("(?<=\\[ln\\][\\s]{32})[0-9/a-zA-Z\\s\\,\\.\\-]*\\[ln\\][\\s]{2}", 
                             entriesFieldsToExtract[j], 
-                            ".*?(?=([^\\:][\\s][0-9]{2}/[0-9]{2}/[0-9]{4}){1}?)")
+                            ".*?(?=([^\\:][\\s][0-9]{2}/[0-9]{2}/[0-9]{4}){1}?|CPCMS\\s[0-9]{4})")
       
       entry <- str_extract_all(pdftext, regexString)
       entryDF <- as.data.frame(cbind(fileNames[i], entry))
