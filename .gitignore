@@ -34,3 +34,13 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+# Folders to ignore specific to this project
+1.ProjectManagement/*
+2.TestPDFs/*
+3.TestNames/*
+4.ScrapedPDFs/*
+5.Archive/*
+
+# Output data
+*.xlsx

@@ -1,6 +1,6 @@
 #PDF READER - BETA VERSION
 
-pacman::p_load(dplyr, tm, pdftools, stringr, splitstackshape, openxlsx)
+pacman::p_load(dplyr, tm, pdftools, stringr, splitstackshape)
 
 readPDFs <- function(fileNames, entriesFieldsToExtract) {
   
