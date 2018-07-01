@@ -21,10 +21,10 @@ Sys.sleep(2)
 # check that its working
 remoteDriver$screenshot(display = TRUE)
 
-# Get the list of names
+# Get the list of names you want to search dockets for
 testNames <- read.csv(paste0(parentFilePath, "3.TestNames/testNames.csv"), 
                       header = T, stringsAsFactors = F)
-# clean it up
+# make DOB into the following format 'MMDDYYYY' as a character string
 testNames <- testNames %>% mutate(cleanedDOB = ifelse(nchar(dob) == 7, 
                                                       paste0("0", dob), dob))
 
@@ -60,6 +60,7 @@ entriesFieldsToExtract <- c("Order - Sentence/Penalty Imposed",
                             "Probation/Parole Continued",
                             "Order Granting Motion to Revoke Probation",
                             "Violation Penalties Imposed")
+
 output <- readPDFs(pdfFileNames, entriesFieldsToExtract)
 
 # Write to File
