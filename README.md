@@ -31,6 +31,3 @@ Takes in a name and date of birth of an individual and, if that input yields res
 
 It can also output a table of the court docket numbers, along with other perhaps relevant information, like police incident number and filing date/time.
 
-#### DocketScraperUtils.R
-
-Has a couple functions which help `DocketScraper.R` do its job: `cleanTable()` which turns the html table output from the search query into a clean and concise dataframe object, and `getSearchResults()` which pulls the html table output from the search query. `getSearchResults()` will throw a `warning()` if no results were found.
