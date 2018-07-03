@@ -161,7 +161,7 @@ downloadDockets <- function(searchResults, downloadFolderPath) {
 }
 
 # Cleaning Search Results Table
-cleanTable <- function(searchResults) {
+cleanScrapedTable <- function(searchResults) {
   nthRow <- 7
   searchResults <- searchResults[seq(1, nrow(searchResults), nthRow), ]
   searchResults <- searchResults[,8:17]
@@ -170,7 +170,8 @@ cleanTable <- function(searchResults) {
                             "policeIncident_complaintNumber",
                             "dateOfBirth")
   rownames(searchResults) <- 1:nrow(searchResults)
-  searchResults$policeIncident_complaintNumber <- as.numeric(searchResults$policeIncident_complaintNumber)
+  searchResults <- searchResults %>% dplyr::mutate_at(vars(colnames(searchResults)), 
+                                                      funs(as.character(.)))
   return(searchResults)
 }
 
@@ -191,19 +192,16 @@ getSearchResults <- function(remoteDriver, pageElement, lastName, firstName, dat
     searchResults <- searchResultsPage %>%
       rvest::html_node(xpath = tableXPath) %>%
       rvest::html_table(fill = T)
-    
-    searchResults <- cleanTable(searchResults)
+    searchResults <- cleanScrapedTable(searchResults)
   } else {
     searchResults <- data.frame(matrix(nrow = 1, ncol = 10))
     names(searchResults) = c("docketNumber", "shortCaption", "filingDate", 
                              "county", "party", "caseStatus", "OTN", "LOTN", 
                              "policeIncident_complaintNumber",
                              "dateOfBirth")
-    searchResults[1,1:8] <- c(NA, NA, NA, NA, 
+    searchResults[1,] <- c(NA, NA, NA, NA, 
                            paste0(lastName, ", ", firstName), 
-                           NA, NA, NA)
-    searchResults[1,9] <- NA_integer_
-    searchResults[1,10] <- dateOfBirth
+                           NA, NA, NA, NA, dateOfBirth)
   }
   return(searchResults)
 }
