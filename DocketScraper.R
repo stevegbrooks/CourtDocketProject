@@ -93,7 +93,7 @@ scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
                                     firstName = firstName, 
                                     dateOfBirth = dateOfBirth)
   
-  if (dim(searchResults)[1] > 1 & all(searchResults$resultReturned == 1)) {
+  if (all(grepl("\\/", searchResults$dateOfBirth))) {
     searchPagesNode <- paste0(parentNode, "searchResultsGridControl_casePager")
     
     searchPages <- xml2::read_html(remoteDriver$getPageSource()[[1]]) %>%
@@ -101,7 +101,12 @@ scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
       rvest::html_children() %>%
       rvest::html_text()
     searchPages <- stringr::str_extract_all(searchPages, "[2-9]*")
-    searchPages <- searchPages[[1]][searchPages[[1]]!=""]
+    if (length(searchPages) > 0) {
+      searchPages <- searchPages[[1]][searchPages[[1]]!=""]
+      hasMorePages <- !is.na(searchPages)[1]
+    } else {
+      hasMorePages <- F
+    }
     
     hasMorePages <- !is.na(searchPages)[1]
     
@@ -165,6 +170,7 @@ cleanTable <- function(searchResults) {
                             "policeIncident_complaintNumber",
                             "dateOfBirth")
   rownames(searchResults) <- 1:nrow(searchResults)
+  searchResults$policeIncident_complaintNumber <- as.numeric(searchResults$policeIncident_complaintNumber)
   return(searchResults)
 }
 
