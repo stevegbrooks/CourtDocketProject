@@ -1,7 +1,7 @@
 ## DOCKET SCRAPER - BETA VERSION
 pacman::p_load(rvest, xml2, tidyverse, magrittr, tm)
 
-#### Selecting the "Participant Name" Search Type from the Search Type Menu ####
+#### Selecting from the Search Type Menu ####
 selectSearchType <- function(remoteDriver, desiredSearchType) {
   
   parentNode <- "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_"
@@ -29,7 +29,7 @@ selectSearchType <- function(remoteDriver, desiredSearchType) {
   Sys.sleep(1)
 }
 
-#### Selecting "Philadelphia" from the County Menu ####
+#### Selecting from the County Menu ####
 selectCounty <- function(remoteDriver, desiredCounty) {
   parentNode <- "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_"
   countyNode <- paste0(parentNode, "participantCriteriaControl_countyListControl")
@@ -129,7 +129,7 @@ scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
       dplyr::mutate(resultReturned = 1,
                     docketURL = paste0(baseURL, docketNumber))
   } else {
-    #no results were returned
+    #no results were returned, so flag accordingly
     searchResults <- searchResults %>%
       dplyr::mutate(resultReturned = 0,
                     docketURL = NA_character_)
@@ -137,7 +137,7 @@ scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
   return(searchResults)
 }
 
-# Download PDFs based on the output of the 'getDocketURLs()' function
+# Downloading PDFs based on the output of 'getDocketURLs()'
 downloadDockets <- function(searchResults, downloadFolderPath) {
   
   for (i in 1:nrow(searchResults)) {
@@ -155,7 +155,7 @@ downloadDockets <- function(searchResults, downloadFolderPath) {
   }
 }
 
-# Function for Cleaning Search Results Table
+# Cleaning Search Results Table
 cleanTable <- function(searchResults) {
   nthRow <- 7
   searchResults <- searchResults[seq(1, nrow(searchResults), nthRow), ]
@@ -168,7 +168,7 @@ cleanTable <- function(searchResults) {
   return(searchResults)
 }
 
-# Function for Getting Results from Search
+# Getting Results from Search
 getSearchResults <- function(remoteDriver, pageElement, lastName, firstName, dateOfBirth) {
   tableXPath <- '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_participantCriteriaControl_searchResultsGridControl_resultsPanel"]/table'
   

@@ -1,7 +1,8 @@
 ## COURT DOCKET READER - BETA VERSION
 
 # Dependencies
-pacman::p_load(RSelenium)
+library(RSelenium)
+library(pacman)
 parentFilePath <- "~/Desktop/Stuff/EvanProjects/CourtDocketProject/"
 source(paste0(parentFilePath, "DocketScraper.R"))
 source(paste0(parentFilePath, "PDFReader.R"))
@@ -27,7 +28,6 @@ testNames <- read.csv(paste0(parentFilePath, "3.TestNames/testNames.csv"),
 # make DOB into the following format 'MMDDYYYY' as a character string
 testNames <- testNames %>% mutate(cleanedDOB = ifelse(nchar(dob) == 7, 
                                                       paste0("0", dob), dob))
-
 # Fill in the HTML fields
 selectSearchType(remoteDriver, "Participant Name")
 remoteDriver$screenshot(display = TRUE)
