@@ -44,3 +44,5 @@ rsconnect/
 
 # Output data
 *.xlsx
+
+.DS_Store
