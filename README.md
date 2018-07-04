@@ -10,7 +10,17 @@ RSelenium is a R package that allows you to use Selenium inside R
 
 Docker is software that allows you to run an environment, where you will run Selenium in.
 
-You must install RSelenium through GitHub, and Docker can be downloaded for free from their website.In addition, the `PDFReader.R` module behaves itself when being run on a Windows machine. Sometimes it has trouble reading a `.pdf` when its on a Mac.
+You must install RSelenium through GitHub, and Docker can be downloaded for free from their website.
+RSelenium has some dependencies of its own that you have to install also before being able to install it. Those packages are also on GitHub only.
+
+Here is the code for the RSelenium installation flow:
+
+`install.packages("devtools")
+devtools::install_github("johndharrison/wdman")
+devtools::install_github("johndharrison/binman")
+devtools::install_github("ropensci/RSelenium")`
+
+
 
 ## Modules
 
