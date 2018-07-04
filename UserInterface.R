@@ -25,11 +25,13 @@ remoteDriver$screenshot(display = TRUE)
 # Get the list of names you want to search dockets for
 testNames <- read.csv(paste0(parentFilePath, "3.TestNames/testNames.csv"), 
                       header = T, stringsAsFactors = F)
-
 # make DOB into the following format 'MMDDYYYY' as a character string
 testNames$cleanedDOB <- str_replace(testNames$dob, "(^[0-9]{1}\\/[0-9]*\\/[0-9]*)", paste0("0", "\\1"))
 testNames$cleanedDOB <- str_replace(testNames$cleanedDOB, "(^[0-9]*\\/)([0-9]{1}\\/[0-9]*)", paste0("\\1", "0", "\\2"))
 testNames$cleanedDOB <- str_replace_all(testNames$cleanedDOB, "\\/", "")
+# make sure the names fields only have one word (preferably their actual name, and no middle initials, 'Jr.', etc...
+testNames$cleanedLast <- str_extract(testNames$lastName, "^[\\w]*")
+testNames$cleanedFirst <- str_extract(testNames$firstName, "^[\\w]*")
 
 # Fill in the HTML fields
 selectSearchType(remoteDriver, "Participant Name")
@@ -39,8 +41,8 @@ selectCounty(remoteDriver, "Philadelphia")
 remoteDriver$screenshot(display = TRUE)
 
 # Enter name and date of birth iteratively
-arguments <- list(testNames$lastName, 
-                  testNames$firstName, 
+arguments <- list(testNames$cleanedLast, 
+                  testNames$cleanedFirst, 
                   testNames$cleanedDOB)
 
 searchResults <- purrr::pmap(arguments, 
