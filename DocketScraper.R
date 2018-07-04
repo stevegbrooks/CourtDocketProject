@@ -101,14 +101,13 @@ scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
       rvest::html_children() %>%
       rvest::html_text()
     searchPages <- stringr::str_extract_all(searchPages, "[2-9]*")
+    
     if (length(searchPages) > 0) {
       searchPages <- searchPages[[1]][searchPages[[1]]!=""]
       hasMorePages <- !is.na(searchPages)[1]
     } else {
       hasMorePages <- F
     }
-    
-    hasMorePages <- !is.na(searchPages)[1]
     
     if (hasMorePages) {
       secondaryPages <- dplyr::data_frame(

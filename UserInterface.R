@@ -48,9 +48,10 @@ searchResults <- purrr::pmap(arguments,
                                  firstName = y,
                                  dateOfBirth = z)) %>% dplyr::bind_rows()
 
-# Download PDFs
+#### Download PDFs - this takes awhile #########################
 downloadFolderPath <- paste0(parentFilePath, "4.ScrapedPDFs/")
 downloadDockets(searchResults, downloadFolderPath)
+################################################################
 
 # Parse PDFs
 setwd(downloadFolderPath)
