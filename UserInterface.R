@@ -31,11 +31,6 @@ testNames$cleanedDOB <- str_replace(testNames$dob, "(^[0-9]{1}\\/[0-9]*\\/[0-9]*
 testNames$cleanedDOB <- str_replace(testNames$cleanedDOB, "(^[0-9]*\\/)([0-9]{1}\\/[0-9]*)", paste0("\\1", "0", "\\2"))
 testNames$cleanedDOB <- str_replace_all(testNames$cleanedDOB, "\\/", "")
 
-#second, if there's only one digit for the day, then add '0' in front
-testNames <- testNames %>% mutate(cleanedDOB = ifelse(grepl("[0-9]*\\/[0-9]{1}\\/[0-9]*", dob), 
-                                                      str_replace(dob, 
-                                                                  "(^[0-9]*\\/)(?=[0-9]{1}\\/)", 
-                                                                  paste0("\\1", "0")), dob))
 # Fill in the HTML fields
 selectSearchType(remoteDriver, "Participant Name")
 remoteDriver$screenshot(display = TRUE)
