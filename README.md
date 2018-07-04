@@ -15,9 +15,9 @@ RSelenium has some dependencies of its own that you have to install also before 
 
 Here is the code for the RSelenium installation flow:
 
-`install.packages("devtools")
-devtools::install_github("johndharrison/wdman")
-devtools::install_github("johndharrison/binman")
+`install.packages("devtools") \n
+devtools::install_github("johndharrison/wdman") \n
+devtools::install_github("johndharrison/binman") \n
 devtools::install_github("ropensci/RSelenium")`
 
 
