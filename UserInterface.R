@@ -53,11 +53,27 @@ searchResults <- purrr::pmap(arguments,
                                  firstName = y,
                                  dateOfBirth = z)) %>% dplyr::bind_rows()
 
+saveRDS(searchResults, paste0(parentFilePath, "searchResults.rds"))
+
+searchResults <- searchResults %>%
+  group_by(id) %>%
+  mutate(rowNum = 1:n())
+
 #### Download PDFs - this takes awhile #########################
 downloadFolderPath <- paste0(parentFilePath, "4.ScrapedPDFs/")
-downloadDockets(searchResults, downloadFolderPath)
+withResults <- searchResults[which(searchResults$resultReturned == 1), ]
+arguments <- list(withResults$docketURL, 
+                  withResults$id, 
+                  withResults$rowNum)
+purr:pmap(arguments,
+          function(x, y, z) 
+            downloadDocket(
+              docketURL = x,
+              id = y,
+              rowNum = z,
+              downloadFolderPath = downloadFolderPath
+            ))
 ################################################################
-
 # Parse PDFs
 setwd(downloadFolderPath)
 pdfFileNames <- list.files(pattern = "*.pdf")

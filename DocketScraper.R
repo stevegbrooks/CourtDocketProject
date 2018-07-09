@@ -162,6 +162,13 @@ downloadDockets <- function(searchResults, downloadFolderPath) {
   }
 }
 
+downloadDocket <- function(docketURL, id, rowNum, downloadFolderPath) {
+  fileName <- paste0(id, "_", rowNum, ".pdf")
+  download.file(docketURL, 
+                destfile = file.path(paste0(downloadFolderPath, fileName)), 
+                mode = 'wb')
+}
+
 # Cleaning Search Results Table
 cleanScrapedTable <- function(searchResults) {
   nthRow <- 7
