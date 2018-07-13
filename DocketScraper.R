@@ -56,7 +56,7 @@ selectCounty <- function(remoteDriver, desiredCounty) {
   Sys.sleep(1)
 }
 
-scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
+scrapeForDockets <- function(remoteDriver, id, lastName, firstName, dateOfBirth) {
   print(paste("Processing", firstName, lastName))
   parentNode <- "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_"
   parentNode <- paste0(parentNode, "participantCriteriaControl_")
@@ -138,6 +138,7 @@ scrapeForDockets <- function(remoteDriver, lastName, firstName, dateOfBirth) {
       dplyr::mutate(resultReturned = 0,
                     docketURL = NA_character_)
   }
+  searchResults$id <- id
   print(sprintf("Returned %.0f search results", 
         nrow(searchResults[which(searchResults$resultReturned == 1),])))
   print("=============================")

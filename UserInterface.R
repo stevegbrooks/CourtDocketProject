@@ -41,24 +41,25 @@ selectCounty(remoteDriver, "Philadelphia")
 remoteDriver$screenshot(display = TRUE)
 
 # Enter name and date of birth iteratively
-arguments <- list(testNames$cleanedLast, 
+arguments <- list(testNames$id,
+                  testNames$cleanedLast, 
                   testNames$cleanedFirst, 
                   testNames$cleanedDOB)
 
 searchResults <- purrr::pmap(arguments, 
-                             function(x, y, z) 
+                             function(q, x, y, z) 
                                scrapeForDockets(
-                                 remoteDriver = remoteDriver, 
+                                 remoteDriver = remoteDriver,
+                                 id = q,
                                  lastName = x,
                                  firstName = y,
                                  dateOfBirth = z)) %>% dplyr::bind_rows()
-
-saveRDS(searchResults, paste0(parentFilePath, "searchResults.rds"))
 
 searchResults <- searchResults %>%
   group_by(id) %>%
   mutate(rowNum = 1:n())
 
+saveRDS(searchResults, paste0(parentFilePath, "searchResults.rds"))
 #### Download PDFs - this takes awhile #########################
 downloadFolderPath <- paste0(parentFilePath, "4.ScrapedPDFs/")
 withResults <- searchResults[which(searchResults$resultReturned == 1), ]
