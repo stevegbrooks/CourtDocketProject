@@ -3,13 +3,13 @@
 # Dependencies
 library(RSelenium)
 library(pacman)
-parentFilePath <- "~/Desktop/Stuff/EvanProjects/CourtDocketProject/"
+parentFilePath <- "~/CourtDocketProject/"
 source(paste0(parentFilePath, "DocketScraper.R"))
 source(paste0(parentFilePath, "PDFReader.R"))
 
 # Set up Docker
 system('docker kill $(docker ps -q)') #get rid of any open containers
-system('docker run -d -p 4445:4444 selenium/standalone-chrome') #create a docket container
+system('docker run -d -p 4445:4444 selenium/standalone-chrome') #create a docker container
 # Then, set up the RSelenium remote driver object
 remoteDriver <- RSelenium::remoteDriver(remoteServerAddr = "localhost",
                                         port = 4445L,
@@ -34,10 +34,14 @@ testNames$cleanedLast <- str_extract(testNames$lastName, "^[\\w]*")
 testNames$cleanedFirst <- str_extract(testNames$firstName, "^[\\w]*")
 
 # Fill in the HTML fields
-selectSearchType(remoteDriver, "Participant Name")
+parentNode <- "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_"
+searchTypeNode <- paste0(parentNode, "searchTypeListControl")
+countyNode <- paste0(parentNode, "participantCriteriaControl_countyListControl")
+
+selectDropdown(remoteDriver, searchTypeNode, "Participant Name")
 remoteDriver$screenshot(display = TRUE)
 
-selectCounty(remoteDriver, "Philadelphia")
+selectDropdown(remoteDriver, countyNode, "Philadelphia")
 remoteDriver$screenshot(display = TRUE)
 
 # Enter name and date of birth iteratively
@@ -66,7 +70,7 @@ withResults <- searchResults[which(searchResults$resultReturned == 1), ]
 arguments <- list(withResults$docketURL, 
                   withResults$id, 
                   withResults$rowNum)
-purr:pmap(arguments,
+purrr::pmap(arguments,
           function(x, y, z) 
             downloadDocket(
               docketURL = x,

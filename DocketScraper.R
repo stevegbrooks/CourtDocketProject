@@ -2,57 +2,26 @@
 pacman::p_load(rvest, xml2, tidyverse, magrittr, tm)
 
 #### Selecting from the Search Type Menu ####
-selectSearchType <- function(remoteDriver, desiredSearchType) {
+selectDropdown <- function(remoteDriver, node, selection) {
   
-  parentNode <- "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_"
-  searchTypeNode <- paste0(parentNode, "searchTypeListControl")
+  dropdownOptions <- xml2::read_html(remoteDriver$getPageSource()[[1]]) %>% #read html page
+    rvest::html_nodes(node) %>% #go to node
+    rvest::html_children() %>% #find the children of the node
+    rvest::html_text() %>% #pull out the text
+    dplyr::data_frame(options = .) #create dataframe
   
-  searchTypes <- xml2::read_html(remoteDriver$getPageSource()[[1]]) %>%
-    rvest::html_nodes(searchTypeNode) %>%
-    rvest::html_children() %>%
-    rvest::html_text() %>%
-    dplyr::data_frame(searchType = .)
+  numOfOptions <- dim(dropdownOptions)[1]
   
-  numOfSearchTypes <- 7
-  searchTypes <- searchTypes %>%
-    dplyr::mutate(listPosition = 1:numOfSearchTypes,
-                  x = paste0(searchTypeNode, 
-                             " > option:nth-child(", 
-                             listPosition, ")"))
+  dropdownOptions <-dropdownOptions %>%
+    dplyr::mutate(listPosition = 1:numOfOptions,
+                  x = paste0(node, " > option:nth-child(", listPosition, ")"))
   
-  selectedTypeIndex <- grep(desiredSearchType, 
-                            searchTypes$searchType, 
-                            ignore.case = T)
+  selectedIndex <- grep(selection, 
+                        dropdownOptions$options, 
+                        ignore.case = T)
   
   remoteDriver$findElement(using = 'css selector', 
-                           searchTypes$x[selectedTypeIndex])$clickElement()
-  Sys.sleep(1)
-}
-
-#### Selecting from the County Menu ####
-selectCounty <- function(remoteDriver, desiredCounty) {
-  parentNode <- "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphDynamicContent_"
-  countyNode <- paste0(parentNode, "participantCriteriaControl_countyListControl")
-  
-  counties <- xml2::read_html(remoteDriver$getPageSource()[[1]]) %>%
-    rvest::html_nodes(countyNode) %>%
-    rvest::html_children() %>%
-    rvest::html_text() %>%
-    dplyr::data_frame(county = .)
-  
-  numOfCounties <- 68
-  counties <- counties %>%
-    dplyr::mutate(listPosition = 1:numOfCounties,
-                  x = paste0(countyNode, 
-                             " > option:nth-child(", 
-                             listPosition, ")"))
-  
-  selectedCountyIndex <- grep(desiredCounty, 
-                              counties$county, 
-                              ignore.case = T)
-  
-  remoteDriver$findElement(using = 'css selector', 
-                           counties$x[selectedCountyIndex])$clickElement()
+                           dropdownOptions$x[selectedIndex])$clickElement()
   Sys.sleep(1)
 }
 
@@ -145,7 +114,7 @@ scrapeForDockets <- function(remoteDriver, id, lastName, firstName, dateOfBirth)
   return(searchResults)
 }
 
-# Downloading PDFs based on the output of 'getDocketURLs()'
+# Downloads PDFs based on the output of 'getDocketURLs()'
 downloadDockets <- function(searchResults, downloadFolderPath) {
   
   for (i in 1:nrow(searchResults)) {
